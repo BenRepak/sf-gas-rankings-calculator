@@ -1,0 +1,34 @@
+<template>
+
+    <template if:true={loadSpinner}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <lightning-combobox
+            name="rankingType"
+            label="Ranking Type"
+            value={rankingValue}
+            placeholder="Select Ranking Type"
+            options={rankingOptions}
+            onchange={handleRankingChange} 
+            required="true"></lightning-combobox>
+    <p>Selected value is: {rankingValue}</p>
+
+
+    <lightning-combobox
+    name="rankingType"
+    label="Ranking Type"
+    value={programValue}
+    placeholder="Select Program Type"
+    options={programOptions}
+    onchange={handleProgramChange} 
+    required="true"></lightning-combobox>
+    <p>Selected value is: {programValue}</p>
+
+
+    <div>
+        <h2>Academic Year</h2>
+        <lightning-input type="string" name="academic year input" label="Academic Year" value={academicYear} placeholder="Enter academic year..." required="true" onchange={handleYearChange}></lightning-input>
+    </div>
+
+    <lightning-button label="Calculate" title="Calculate Rankings" onclick={calculate} class="slds-m-left_x-small"></lightning-button>
+</template>
