@@ -1,0 +1,136 @@
+<template>
+
+    <div class="slds-grid slds-wrap slds-var-p-bottom_medium">
+        <template if:true={loadSpinner}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_6-of-12">
+            <div class="slds-var-p-right_x-small">
+                <lightning-card title="Select Campaign">
+                    <div class="slds-var-p-around_medium">
+                        <c-search-lookup-component object-name="Campaign" field-name="Name" label="Campaign Search"
+                            placeholder="Search Campaign" icon-name="standard:campaign" required="true"
+                            onselected={handleCampaignIdChange} ondeselected={handleCampaignIdChange}>
+                        </c-search-lookup-component>
+                    </div>
+                </lightning-card>
+            </div>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_6-of-12">
+            <div class="slds-var-p-left_x-small">
+                <lightning-card title="Select Assigned Advisor" class="search-card">
+                    <div class="slds-var-p-around_medium">
+                        <c-search-lookup-component object-name="User" field-name="Name" label="Advisor Search"
+                            placeholder="Search Users" icon-name="standard:user" required="true"
+                            onselected={handleAdvisorIdChange} ondeselected={handleAdvisorIdChange}
+                            class="advisor-search">
+                        </c-search-lookup-component>
+                    </div>
+                </lightning-card>
+            </div>
+        </div>
+    </div>
+
+    <!-- https://developer.salesforce.com/docs/component-library/bundle/lightning-datatable/example -->
+    <template if:true={hasAttendees}>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1">
+                <div class="slds-var-p-top_medium">
+                    <lightning-card>
+                    <a slot="title" href={attendeeCardTitleLink} target = "_blank">{attendeeCardTitle}</a>
+                     
+                        <div class="slds-grid slds-wrap">
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <lightning-progress-ring value={percentAttendeesWithAdvisor} size="large">
+                                    </lightning-progress-ring>
+                                </div>
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <p> {countAttendeesWithoutAdvisor} to assign</p>
+                                </div>
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <lightning-button variant="brand" label="Assign Advisor"
+                                        title="Assign Selected to Advisor" onclick={assignAdvisor}
+                                        class="slds-var-m-left_x-small" disabled={hideAdvisor}>
+                                    </lightning-button>
+                                    <lightning-helptext content={advisorAssignmentHelpText}></lightning-helptext>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <lightning-progress-ring value={percentAttendeesProcessed} size="large">
+                                    </lightning-progress-ring>
+                                </div>
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <p> {countAttendeesToProcess} to review</p>
+                                </div>
+                                <div class="slds-var-p-around_medium slds-align_absolute-center">
+                                    <lightning-button variant="destructive" label="Mark Reviewed"
+                                        title="Mark status as reviewed" onclick={updateCampaignMemberStatus}
+                                        class="slds-var-m-left_x-small" disabled={hideMassUpdate}>
+                                    </lightning-button>
+                                    <lightning-helptext content={massUpdateHelpText}></lightning-helptext>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-var-p-around_medium">
+                                    <lightning-combobox name="batchSizeSelecter" value={batchSize}
+                                        placeholder="Select Multiple" options={batchSelectOption}
+                                        onchange={handleBatchSizeChange}></lightning-combobox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-var-p-around_medium">
+
+                                    <template if:true={hasSelectedRows}>
+                                        <lightning-pill label={selectedPillText} onremove={refreshList} has-error>
+                                        </lightning-pill>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-var-p-around_medium">
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <div class="slds-var-p-around_medium">
+                                    <span>
+                                        {currentTime}
+                                        <lightning-icon icon-name="utility:refresh" onclick={refreshList} size="xx-small"
+                                            alternative-text="Refresh Attendees button" title="Refresh Attendees"
+                                            class="slds-var-p-left_medium icon-pointer">
+                                        </lightning-icon>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-var-p-around_medium">
+                            <lightning-datatable key-field="memberId" data={memberListData} show-row-number-column
+                                row-number-offset={rowOffset} columns={columns} onrowselection={updateSelectedRows}
+                                onsort={updateColumnSorting} sorted-by={sortBy} sorted-direction={sortDirection}
+                                selected-rows={preSelectedRows} suppress-bottom-bar>
+                            </lightning-datatable>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- <template if:true={hasCampaign}>
+
+    <template if:true={showNoAttendees}>
+        <p> There are no attendees for the selected event.</p>
+        </template>
+    </template> -->
+
+
+</template>

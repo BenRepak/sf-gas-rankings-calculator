@@ -3,32 +3,76 @@
     <template if:true={loadSpinner}>
         <lightning-spinner alternative-text="Loading"></lightning-spinner>
     </template>
-    <lightning-combobox
-            name="rankingType"
-            label="Ranking Type"
-            value={rankingValue}
-            placeholder="Select Ranking Type"
-            options={rankingOptions}
-            onchange={handleRankingChange} 
-            required="true"></lightning-combobox>
-    <p>Selected value is: {rankingValue}</p>
 
+    <lightning-card title="Rankings Settings Configuration">
+        <div class="slds-p-around_medium">
+            <div class="slds-p-around_small">
+                <lightning-combobox name="rankingType" label="Ranking Type" value={rankingValue}
+                    placeholder="Select Ranking Type" options={rankingOptions} onchange={handleRankingChange}
+                    required="true"></lightning-combobox>
+            </div>
+            <div class="slds-p-around_small">
+                <lightning-combobox name="rankingType" label="Ranking Type" value={programValue}
+                    placeholder="Select Program Type" options={programOptions} onchange={handleProgramChange}
+                    required="true"></lightning-combobox>
+            </div>
+            <div class="slds-p-around_small">
+                <lightning-input type="string" name="academic year input" label="Academic Year" value={academicYear}
+                    placeholder="Enter academic year..." required="true" onchange={handleYearChange}></lightning-input>
+            </div>
+            <div class="slds-p-around_small">
 
-    <lightning-combobox
-    name="rankingType"
-    label="Ranking Type"
-    value={programValue}
-    placeholder="Select Program Type"
-    options={programOptions}
-    onchange={handleProgramChange} 
-    required="true"></lightning-combobox>
-    <p>Selected value is: {programValue}</p>
+                <lightning-button label="Calculate" title="Calculate Rankings" onclick={calculate}
+                    class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </div>
+    </lightning-card>
 
+    <div if:true={showSummary}>
 
-    <div>
-        <h2>Academic Year</h2>
-        <lightning-input type="string" name="academic year input" label="Academic Year" value={academicYear} placeholder="Enter academic year..." required="true" onchange={handleYearChange}></lightning-input>
+        <!-- application counts -->
+        <div class="slds-p-top_medium">
+            <lightning-card title="Applicant Count Stats">
+                <p class="slds-p-around_medium"># Total Applicants: {totalApplicants}</p>
+                <p class="slds-p-around_medium"># Total Offers: {totalOffers}</p>
+                <p class="slds-p-around_medium"># Total New Entrants: {totalNewEntrants}</p>
+            </lightning-card>
+        </div>
+
+        <!-- gpa stats -->
+        <div class="slds-p-top_medium">
+            <lightning-card title="GPA Status">
+                <p class="slds-p-around_medium"># New Entrants with GPA: {countNewEntrantsWithGPA}</p>
+                <p class="slds-p-around_medium">AVG New Entrant GPA: {avgGpaNewEntrants}</p>
+                <p class="slds-p-around_medium">Median New Entrant GPA: {medianGpaNewEntrants}</p>
+            </lightning-card>
+        </div>
+
+        <!-- gmat stats -->
+
+        <div class="slds-p-top_medium">
+            <lightning-card title="GMAT Status">
+                <p class="slds-p-around_medium"># New Entrants with GMAT: {countNewEntrantsWithGmat}</p>
+                <p class="slds-p-around_medium">Average New Entrant GMAT Score: {avgGmatNewEntrants}</p>
+                <p class="slds-p-around_medium">Median New Entrant GMAT Score: {medianGmatNewEntrants}</p>
+            </lightning-card>
+        </div>
+
+        <!-- gre stats -->
+        <div class="slds-p-top_medium">
+            <lightning-card title="GRE Stats">
+                <p class="slds-p-around_medium"># New Entrants with GRE: {countNewEntrantsWithGre}</p>
+                <p class="slds-p-around_medium">Average New Entrant GRE Score: {avgGreNewEntrants}</p>
+                <p class="slds-p-around_medium">Median New Entrant GRE Score: {medianGreNewEntrants}</p>
+            </lightning-card>
+        </div>
+        <!-- employment stats -->
+        <div class="slds-p-top_medium">
+            <lightning-card title="Employment Stats">
+                <p class="slds-p-around_medium"># New Entrants with Employment: {countNewEntrantsWithEmp}</p>
+                <p class="slds-p-around_medium">Average New Entrant Months of Employment: {avgMonthsEmpNewEntrants}</p>
+                <p class="slds-p-around_medium">Median New Entrant Months of Emlpoyment: {medianMonthsEmpNewEntrants}</p>
+            </lightning-card>
+        </div>
     </div>
-
-    <lightning-button label="Calculate" title="Calculate Rankings" onclick={calculate} class="slds-m-left_x-small"></lightning-button>
 </template>

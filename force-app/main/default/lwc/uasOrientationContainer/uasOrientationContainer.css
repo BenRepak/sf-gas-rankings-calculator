@@ -1,0 +1,7 @@
+.icon-pointer:hover{
+    cursor: pointer;
+}
+
+.current-refresh-time{
+    float:right;
+}
