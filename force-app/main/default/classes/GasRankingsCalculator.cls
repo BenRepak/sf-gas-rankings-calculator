@@ -83,23 +83,14 @@ public with sharing class GasRankingsCalculator {
         }
     }
 
-
-    
-
-
-    // TFE calculations
-
     @AuraEnabled
     public static Ranking processRankings(String programs, String academicYear, String rankingType) {
 
         Ranking ranking = new Ranking();
         ranking.desiredPrograms = programs.split(',');
-
         ranking.rankingType = rankingType;
-        
         // need to including pending to account for the deferals 
         ranking.desiredRecordTypes = new List<String>{'Final Review Complete','Pending Final Review'};
-
         // build set of desired terms based on academic year
         ranking.desiredAcademicYear = academicYear;
         ranking.desiredTerms = new List<String>();
@@ -107,12 +98,9 @@ public with sharing class GasRankingsCalculator {
         ranking.desiredTerms.add('Summer ' + ranking.desiredAcademicYear);
         ranking.desiredTerms.add('Fall ' + ranking.desiredAcademicYear);
 
-
         List<Graduate_Application_Summary__c> recordsToProcess = new List<Graduate_Application_Summary__c>();
         // execute query and loop results 
-
         Set<String> toSkip = new Set<String>();
-
         List<Graduate_Application_Summary__c> records = getGasRecords(ranking.desiredTerms,ranking.desiredPrograms,ranking.desiredRecordTypes);
         for(Graduate_Application_Summary__c g :records){ 
             
@@ -121,7 +109,6 @@ public with sharing class GasRankingsCalculator {
                 toSkip.add(g.id);
                 continue;
             }
-            
             /*
             * count of applicants
             */
@@ -130,7 +117,6 @@ public with sharing class GasRankingsCalculator {
                 ranking.countApplicants ++;
                 ranking.recordsToProcess.add(g);
             }
-            
             /*
             * count of offers
             */
@@ -171,8 +157,6 @@ public with sharing class GasRankingsCalculator {
                     empMonths.add(g.Months_of_Professional_Experience__c);
                 }
             }
-            
-            
         }
 
         system.debug('');
@@ -191,8 +175,6 @@ public with sharing class GasRankingsCalculator {
         system.debug('Number of Applicants --> ' + ranking.countApplicants);
         system.debug('Number of Offers of Admission --> ' + ranking.countOffers);
         system.debug('Number of New Entrants --> ' + ranking.countNewEntrants);
-
-
 
         ranking.avgGpaNewEntrants = calculateAverage(ranking.sumGpaNewEntrants, ranking.countNewEntrantsWithGPA);
         ranking.medianGpaNewEntrants = calculateMedian(gpaScores);
