@@ -4,9 +4,9 @@
     public static List<Decimal> empMonthsExcluding0 = new List<Decimal>();
     public static List<Decimal> gpaScores = new List<Decimal>();
 
-    String program = 'MSF';
+    String program = 'MSIS';
     String year = '2021';
-    String type = 'tfe';
+    String type = 'aacsb';
 
     processRankings(program,year,type);
 
@@ -111,16 +111,24 @@
         for(Graduate_Application_Summary__c g :records){ 
             
             // skip orphaned records
+            Boolean skipRecord = false;
+
             if(g.applications_graduate__r.size() == 0){
                 toSkip.add(g.id);
-                continue;
+                skipRecord = true;
             }
-
             for(Application_Graduate__c ag : g.applications_graduate__r){
+                // if child AG is excluded, break out of AG loop then continue onto the next gas record
                 if(ag.Excluded_from_Reports_Flag__c == true){
                     toSkip.add(g.id);
-                    continue;
+                    system.debug('ag --> ' + ag);
+                    skipRecord = true;
+                    break;
                 }
+            }
+
+            if(skipRecord == true){
+                continue;
             }
 
 
@@ -481,6 +489,7 @@
         String senderName = 'Eccles Salesforce Automated Process';
         String replyTo = 'Salesforce@eccles.utah.edu';
         List<String> usersToEmail = new String[]{'ben.repak@eccles.utah.edu','bethany.crowell@eccles.utah.edu'};
+        // List<String> usersToEmail = new String[]{'ben.repak@eccles.utah.edu','bethany.crowell@eccles.utah.edu'};
         String emailSubject = program + ' - ' + rankingType + ' -- GAS Ranking Summary' ;
         String emailBody = bodyString;
 
